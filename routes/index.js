@@ -9,12 +9,22 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/get_data', function(req, res, next) {
-    if(req.query.start_time === undefined) {
-        res.json({error: "start_time is a required parameter"});
+    if(req.query.start_date === undefined) {
+        res.json({error: "start_date is a required parameter"});
     } else {
+        let latestDate = req.query.end_date === undefined ? new Date().toISOString() : req.query.end_date;
         let conn = MySQLConnector.getInstance().conn;
-        conn.query("SELECT * FROM", function(error, results, fields));
-        res.json({start_time: req.query.start_time, end_time: req.query.end_time});
+        conn.query("SELECT * FROM statistics WHERE timecode >= ? AND timecode <= ?",
+            [require('moment')(req.query.start_date).format('YYYY-MM-DD HH:mm:ss'),
+                require('moment')(latestDate).format('YYYY-MM-DD HH:mm:ss')], function(error, results, fields) {
+            if(error) {
+                res.code(500);
+                console.error(error);
+                res.json({error: "MySQL service down."});
+                return;
+            }
+            res.json(results);
+        });
     }
 });
 
