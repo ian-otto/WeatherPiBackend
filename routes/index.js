@@ -41,8 +41,8 @@ router.get('/previous_week', function (req, res, next) {
             }
             MySQLConnector.getInstance().conn
                 .query("SELECT DATE(timecode) the_date, MAX(temperature) AS high_temp, MIN(temperature) " +
-                    "AS low_temp FROM statistics WHERE the_date < DATE(NOW()) GROUP BY the_date ORDER BY the_date " +
-                    "DESC LIMIT 5", function (e, r2, f) {
+                    "AS low_temp FROM statistics GROUP BY the_date ORDER BY the_date " +
+                    "DESC LIMIT 6", function (e, r2, f) {
                     if(e) {
                         console.error(e);
                         res.status(500);
@@ -51,11 +51,11 @@ router.get('/previous_week', function (req, res, next) {
                     }
                     let data = {
                         today: r[0],
-                        one: r2[0],
-                        two: r2[1],
-                        three: r2[2],
-                        four: r2[3],
-                        five: r2[4]
+                        "1": r2[1],
+                        "2": r2[2],
+                        "3": r2[3],
+                        "4": r2[4],
+                        "5": r2[5]
                     };
                     res.json(data);
                 });
