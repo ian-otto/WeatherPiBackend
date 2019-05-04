@@ -206,7 +206,7 @@
 		for(var num = 1; num < 6; num++){
 			if(data[num] !== undefined){
 				$(".day" + num + " > .forecast-header > .day").text(data[num].the_date);
-				$(".day" + num + " > . forecast-content > .high_temp").text(data[num].high_temp);
+				$(".day" + num + " > .forecast-content > .high_temp").text(data[num].high_temp);
 				$(".day" + num + " > .forecast-content > small > .low_temp").text(data[num].low_temp);
 			}
 		}
