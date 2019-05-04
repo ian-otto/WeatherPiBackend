@@ -240,21 +240,22 @@
         $(".today > .forecast-content > span > .wind_speed").text(data.today.wind_speed);
 
 
-        for (var num = 1; num < 6; num++) {
-            if (data[num] !== undefined) {
-                $(".day" + num + " > .forecast-header > .day").text(data[num].the_date);
-                $(".day" + num + " > . forecast-content > .high_temp").text(data[num].high_temp);
-                $(".day" + num + " > .forecast-content > small > .low_temp").text(data[num].low_temp);
-            }
-        }
-    });
+
+		for(var num = 1; num < 6; num++){
+			if(data[num] !== undefined){
+				$(".day" + num + " > .forecast-header > .day").text(data[num].the_date);
+				$(".day" + num + " > .forecast-content > .degree > .high_temp").text(data[num].high_temp);
+				$(".day" + num + " > .forecast-content > small > .low_temp").text(data[num].low_temp);
+			}
+		}
+	});
 
 </script>
 
 <script>
 
 
-    $.get("./get_data?start_date=0", function (data) {
+    $.get("./get_data?start_date=" + new Date(Date.now() - (60*60*30*1000)).toISOString(), function (data) {
         var tempArray = [];
         var windChill = [];
         var dewPoint = [];
@@ -263,15 +264,45 @@
         var seaLevel = [];
         var rain = [];
 
-        for (var i = 1; i < 31; i++) {
-            tempArray.push(data[i].temperature);
-            windChill.push(data[i].wind_chill);
-            dewPoint.push(data[i].dew_point);
-            windSpeed.push(data[i].wind_speed);
-            humidity.push(data[i].humidity);
-            seaLevel.push(data[i].barometer);
-            rain.push(data[i].hourly_rain);
+        for (var i = 0; i < 30; i++) {
+            var sums = {
+                temp: 0,
+                windC: 0,
+                dewP: 0,
+                windS: 0,
+                humidity: 0,
+                seaL: 0,
+                rain: 0
+            };
+
+            for(var j = 0; j < 30; j++) {
+                if(data[(i*30) + j] !== undefined) {
+                    sums.temp += data[(i * 30) + j].temperature;
+                    sums.windC += data[(i * 30) + j].wind_chill;
+                    sums.dewP += data[(i * 30) + j].dew_point;
+                    sums.windS += data[(i * 30) + j].wind_speed;
+                    sums.humidity += data[(i * 30) + j].humidity;
+                    sums.seaL += data[(i * 30) + j].barometer;
+                    if(sums.rain < data[(i*30) + j].hourly_rain)
+                        sums.rain += data[(i * 30) + j].hourly_rain;
+                }
+            }
+            tempArray.push(sums.temp / 30);
+            windChill.push(sums.windC / 30);
+            dewPoint.push(sums.dewP / 30);
+            windSpeed.push(sums.windS / 30);
+            humidity.push(sums.humidity / 30);
+            seaLevel.push(sums.seaL / 30);
+            rain.push(sums.rain / 30);
         }
+
+        tempArray = tempArray.reverse();
+        windChill = windChill.reverse();
+        dewPoint = dewPoint.reverse();
+        windSpeed = windSpeed.reverse();
+        humidity = humidity.reverse();
+        seaLevel = seaLevel.reverse();
+        rain = rain.reverse();
 
         new Chart(document.getElementById("temperature-chart"), {
             type: 'line',
@@ -450,7 +481,9 @@
 
 
 
-        var n = ne = se = s = sw = w = nw = 0;
+        var n, ne, se, s, sw, w, nw;
+        n = ne = se = s = sw = w = nw = 0;
+
         for (i = 1; i < 31; i++) {
             if(data[i].wind_dir >= 0 && data[i].wind_dir < 22.5) n++;
             if(data[i].wind_dir >= 22.5 && data[i].wind_dir < 67.5) ne++;
@@ -468,6 +501,11 @@
         sw = Math.round(sw/30 * 100);
         w = Math.round(w/30 * 100);
         nw = Math.round(nw/30 * 100);
+        console.log(n);
+        console.log(ne);
+        console.log(se);
+        console.log(s);
+
 
         new Chart(document.getElementById("winddirection-chart"), {
             type: 'pie',
