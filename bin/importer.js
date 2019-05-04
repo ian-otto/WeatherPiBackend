@@ -9,11 +9,15 @@ if(process.argv.length < 3) {
 let conn = MySQLConnector.getInstance().conn;
 
 let parsed = Parser.parseDaily(process.argv[2]);
-for(let time_parsed of parsed) {
-    conn.query('INSERT INTO statistics SET ?', time_parsed, function (e, v, f){
-        if(e) {
+for(let parsed_single = 0; parsed_single < parsed.length; parsed_single++) {
+
+    conn.query('INSERT IGNORE INTO statistics SET ?', parsed[parsed_single], function (e, v, f) {
+        if (e) {
             console.error("Failed to insert.");
             console.error(e);
+        }
+        if((parsed_single + 1) === parsed.length) {
+            conn.end();
         }
     });
 }
