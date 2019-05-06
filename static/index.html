@@ -277,7 +277,7 @@
 				seaL: 0,
 				rain: 0
 			};
-
+			counter = 0;
 			for(var j = 0; j < 30; j++) {
 				if(data[(i*30) + j] !== undefined) {
 					sums.temp += data[(i * 30) + j].temperature;
@@ -288,6 +288,8 @@
 					sums.seaL += data[(i * 30) + j].barometer;
 					if(sums.rain < data[(i*30) + j].hourly_rain)
 						sums.rain += data[(i * 30) + j].hourly_rain;
+
+					counter++;
 				}
 			}
 			if(data[i*30] !== undefined) {
@@ -296,13 +298,23 @@
 			} else {
 				hourlyReports.labels.push("00:00");
 			}
-			hourlyReports.tempArray.push(sums.temp / 30);
-			hourlyReports.windChill.push(sums.windC / 30);
-			hourlyReports.dewPoint.push(sums.dewP / 30);
-			hourlyReports.windSpeed.push(sums.windS / 30);
-			hourlyReports.humidity.push(sums.humidity / 30);
-			hourlyReports.seaLevel.push(sums.seaL / 30);
-			hourlyReports.rain.push(sums.rain / 30);
+			if(counter !== 0) {
+				hourlyReports.tempArray.push(sums.temp / counter);
+				hourlyReports.windChill.push(sums.windC / counter);
+				hourlyReports.dewPoint.push(sums.dewP / counter);
+				hourlyReports.windSpeed.push(sums.windS / counter);
+				hourlyReports.humidity.push(sums.humidity / counter);
+				hourlyReports.seaLevel.push(sums.seaL / counter);
+				hourlyReports.rain.push(sums.rain);
+			} else {
+				hourlyReports.tempArray.push(0);
+				hourlyReports.windChill.push(0);
+				hourlyReports.dewPoint.push(0);
+				hourlyReports.windSpeed.push(0);
+				hourlyReports.humidity.push(0);
+				hourlyReports.seaLevel.push(0);
+				hourlyReports.rain.push(0);
+			}
 		}
 		hourlyReports.labels.reverse();
 		hourlyReports.tempArray.reverse();
