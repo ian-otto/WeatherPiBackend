@@ -14,7 +14,7 @@ router.get('/get_data', function(req, res, next) {
     } else {
         let latestDate = req.query.end_date === undefined ? new Date() : req.query.end_date;
         let conn = MySQLConnector.getInstance().conn;
-        conn.query("SELECT * FROM statistics WHERE timecode >= ? AND timecode <= ?",
+        conn.query("SELECT * FROM statistics WHERE timecode >= ? AND timecode <= ? ORDER BY timecode DESC",
             [require('moment')(req.query.start_date).format('YYYY-MM-DD HH:mm:ss'),
                 require('moment')(latestDate).format('YYYY-MM-DD HH:mm:ss')], function(error, results, fields) {
                 if(error) {
