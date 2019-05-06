@@ -255,7 +255,7 @@
 <script>
 
 
-	$.get("./get_data?start_date=" + new Date(Date.now() - (60*60*30*1000)).toISOString(), function (data) {
+	$.get("./get_data?start_date=" + new Date(Date.now() - (60*60*24*1000)).toISOString(), function (data) {
 		console.log(data);
 		var hourlyReports = {
 			labels: [],
@@ -292,7 +292,7 @@
 			}
 			if(data[i*30] !== undefined) {
 				var tmp = new Date(data[i * 30].timecode);
-				hourlyReports.labels.push(tmp.getHours() + ":" + tmp.getMinutes());
+				hourlyReports.labels.push(tmp.getHours() + ":" + (tmp.getMinutes() < 10 ? "0" + tmp.getMinutes() : tmp.getMinutes()));
 			} else {
 				hourlyReports.labels.push("00:00");
 			}
@@ -491,21 +491,33 @@
 
 
 
+		/*
+		N 348.75 - 33.75
+NE 33.75 - 78.75
+E 78.75 - 123.75
+SE 123.75 - 168.75
+S 168.75 - 213.75
+SW 213.75 - 258.75
+W 258.75 - 281.25
+NW 281.25 - 348.75
+		 */
 
-		var n, ne, se, s, sw, w, nw;
-		n = ne = se = s = sw = w = nw = 0;
+		var n, ne, e, se, s, sw, w, nw;
+		n = ne = se = e = s = sw = w = nw = 0;
 		var counter = 0;
 		for (i = 0; i < data.length; i++) {
-			if(data[i].wind_speed > 0) {
-				if (data[i].wind_dir >= 0 && data[i].wind_dir < 22.5) n++;
-				if (data[i].wind_dir >= 22.5 && data[i].wind_dir < 67.5) ne++;
-				if (data[i].wind_dir >= 112.5 && data[i].wind_dir < 157.5) se++;
-				if (data[i].wind_dir >= 157.5 && data[i].wind_dir < 202.5) s++;
-				if (data[i].wind_dir >= 202.5 && data[i].wind_dir < 247.5) sw++;
-				if (data[i].wind_dir >= 247.5 && data[i].wind_dir < 292.5) w++;
-				if (data[i].wind_dir >= 292.5 && data[i].wind_dir < 337.5) nw++;
+			//if(data[i].wind_speed > 0) {
+				if (data[i].wind_dir >= 0 && data[i].wind_dir < 33.75) n++;
+				if (data[i].wind_dir >= 33.75 && data[i].wind_dir < 78.75) ne++;
+				if (data[i].wind_dir >= 78.75 && data[i].wind_dir < 123.75) e++;
+				if (data[i].wind_dir >= 123.75 && data[i].wind_dir < 168.75) se++;
+				if (data[i].wind_dir >= 168.75 && data[i].wind_dir < 213.75) s++;
+				if (data[i].wind_dir >= 213.75 && data[i].wind_dir < 258.75) sw++;
+				if (data[i].wind_dir >= 258.75 && data[i].wind_dir < 281.25) w++;
+				if (data[i].wind_dir >= 281.25 && data[i].wind_dir < 348.75) nw++;
+				if (data[i].wind_dir >= 348.75 && data[i].wind_dir < 360) n++;
 				counter++;
-			}
+			//}
 		}
 
 		n = Math.round(n/counter * 100);
