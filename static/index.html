@@ -296,7 +296,7 @@
 			}
 			if(data[i*30] !== undefined) {
 				var tmp = new Date(data[i * 30].timecode);
-				hourlyReports.labels.push(tmp.getHours() + ":" + (tmp.getMinutes() < 10 ? "0" + tmp.getMinutes() : tmp.getMinutes()));
+				hourlyReports.labels.push(tmp.getHours() + ":00");
 			} else {
 				hourlyReports.labels.push("00:00");
 			}
