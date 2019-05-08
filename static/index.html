@@ -104,7 +104,6 @@
 				<div class="forecast today">
 					<div class="forecast-header">
 						<div class="day">Monday</div>
-						<div class="date">6 Oct</div>
 					</div> <!-- .forecast-header -->
 					<div class="forecast-content">
 						<div class="location">Flagstaff</div>
@@ -235,7 +234,7 @@
 <script>
 
 	$.get("./previous_week", function (data) {
-		$(".today > .forecast-header > .day").text(data.today.date)
+		$(".today > .forecast-header > .day").text(data.today.the_date)
 		$(".today > .forecast-content > .degree > .num > .temperature").text(Math.round(data.today.current_temp));
 		$(".today > .forecast-content > span > .rain_count").text(data.today.rain_count);
 		$(".today > .forecast-content > span > .wind_direction").text(data.today.wind_direction);

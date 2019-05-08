@@ -1,7 +1,7 @@
 const express = require('express');
 const MySQLConnector = require('../lib/mysql-connector');
 const router = express.Router();
-
+const moment = require('moment');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -14,9 +14,9 @@ router.get('/get_data', function(req, res, next) {
     } else {
         let latestDate = req.query.end_date === undefined ? new Date() : req.query.end_date;
         let conn = MySQLConnector.getInstance().conn;
-        conn.query("SELECT * FROM statistics WHERE timecode >= ? AND timecode <= ? ORDER BY timecode DESC",
-            [require('moment')(req.query.start_date).format('YYYY-MM-DD HH:mm:ss'),
-                require('moment')(latestDate).format('YYYY-MM-DD HH:mm:ss')], function(error, results, fields) {
+        conn.query("SELECT * FROM statistics WHERE timecode >= ? AND timecode <= ? ORDER BY timecode DESC LIMIT 2000",
+            [moment(req.query.start_date).format('YYYY-MM-DD HH:mm:ss'),
+                moment(latestDate).format('YYYY-MM-DD HH:mm:ss')], function(error, results, fields) {
                 if(error) {
                     res.code(500);
                     console.error(error);
@@ -31,7 +31,7 @@ router.get('/get_data', function(req, res, next) {
 router.get('/previous_week', function (req, res, next) {
     MySQLConnector.getInstance().conn
         .query("SELECT temperature AS current_temp, daily_rain AS rain_count," +
-            " wind_dir AS wind_direction, wind_speed, DATE(`timecode`) AS date" +
+            " wind_dir AS wind_direction, wind_speed, DATE(`timecode`) AS the_date" +
             " FROM statistics ORDER BY timecode DESC LIMIT 1", function (e, r, f) {
             if(e) {
                 console.error(e);
@@ -48,6 +48,10 @@ router.get('/previous_week', function (req, res, next) {
                         res.status(500);
                         res.json({error: "mysql error"});
                         return;
+                    }
+                    r[0].the_date = moment(r[0].the_date).format("D MMM");
+                    for(let result of r2) {
+                        result.the_date = moment(result.the_date).format("dddd");
                     }
                     let data = {
                         today: r[0],
